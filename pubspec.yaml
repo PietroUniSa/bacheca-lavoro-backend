@@ -1,0 +1,22 @@
+name: bacheca_backend
+description: Back-end della bacheca annunci di lavoro (Dart + shelf + SQLite).
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+
+# Dipendenze ammesse: specs/05-architecture.md. Per aggiornarle usa
+# `dart pub upgrade --major-versions` e riesegui tutti i test.
+dependencies:
+  args: ^2.5.0
+  cryptography: ^2.7.0
+  shelf: ^1.4.1
+  shelf_multipart: ^2.0.0
+  shelf_router: ^1.1.4
+  sqlite3: ^3.9.2
+
+dev_dependencies:
+  http: ^1.2.0
+  lints: ^5.0.0
+  test: ^1.25.0

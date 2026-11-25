@@ -1,0 +1,9 @@
+.dart_tool/
+build/
+# dati runtime: database e CV caricati non vanno nel repo
+data/
+data-demo/
+data-*/
+*.db
+*.db-wal
+*.db-shm

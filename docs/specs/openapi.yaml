@@ -1,0 +1,128 @@
+openapi: 3.0.3
+info:
+  title: Bacheca Lavoro API
+  version: 1.0.0
+  description: Contratto formale. Narrativa e regole in 04-api-contract.md. Schemi in openapi-components.yaml.
+servers:
+  - url: http://localhost:8080
+components:
+  securitySchemes:
+    bearer: { type: http, scheme: bearer }
+paths:
+  /health:
+    get: { summary: E0 health, responses: { '200': { description: OK, content: { application/json: { schema: { $ref: 'openapi-components.yaml#/components/schemas/Health' } } } } } }
+  /api/auth/register:
+    post:
+      summary: E1 registrazione (R1)
+      requestBody: { required: true, content: { application/json: { schema: { $ref: 'openapi-components.yaml#/components/schemas/RegisterRequest' } } } }
+      responses:
+        '201': { description: Creata, content: { application/json: { schema: { $ref: 'openapi-components.yaml#/components/schemas/Company' } } } }
+        '400': { $ref: 'openapi-components.yaml#/components/responses/Error400' }
+        '409': { $ref: 'openapi-components.yaml#/components/responses/Error409' }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }
+  /api/auth/login:
+    post:
+      summary: E2 login (R2)
+      requestBody: { required: true, content: { application/json: { schema: { $ref: 'openapi-components.yaml#/components/schemas/LoginRequest' } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: 'openapi-components.yaml#/components/schemas/LoginResponse' } } } }
+        '400': { $ref: 'openapi-components.yaml#/components/responses/Error400' }
+        '401': { $ref: 'openapi-components.yaml#/components/responses/Error401' }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }
+  /api/auth/logout:
+    post:
+      summary: E3 logout (R3)
+      security: [{ bearer: [] }]
+      responses:
+        '204': { description: Sessione chiusa }
+        '401': { $ref: 'openapi-components.yaml#/components/responses/Error401' }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }
+  /api/me:
+    get:
+      summary: E4 azienda corrente
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: 'openapi-components.yaml#/components/schemas/Company' } } } }
+        '401': { $ref: 'openapi-components.yaml#/components/responses/Error401' }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }
+  /api/jobs:
+    get:
+      summary: E5 bacheca pubblica (R5)
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: 'openapi-components.yaml#/components/schemas/Job' } } } } } } }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }
+    post:
+      summary: E7 pubblica annuncio (R4)
+      security: [{ bearer: [] }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: 'openapi-components.yaml#/components/schemas/JobCreate' } } } }
+      responses:
+        '201': { description: Creato, content: { application/json: { schema: { $ref: 'openapi-components.yaml#/components/schemas/Job' } } } }
+        '400': { $ref: 'openapi-components.yaml#/components/responses/Error400' }
+        '401': { $ref: 'openapi-components.yaml#/components/responses/Error401' }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }
+  /api/jobs/{id}:
+    get:
+      summary: E6 dettaglio annuncio (R5)
+      parameters: [{ $ref: 'openapi-components.yaml#/components/parameters/Id' }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: 'openapi-components.yaml#/components/schemas/Job' } } } }
+        '404': { $ref: 'openapi-components.yaml#/components/responses/Error404' }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }
+  /api/companies/me/jobs:
+    get:
+      summary: E8 i miei annunci (R7)
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: 'openapi-components.yaml#/components/schemas/MyJob' } } } } } } }
+        '401': { $ref: 'openapi-components.yaml#/components/responses/Error401' }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }
+  /api/jobs/{id}/applications:
+    parameters: [{ $ref: 'openapi-components.yaml#/components/parameters/Id' }]
+    post:
+      summary: E9 candidatura (R6)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data: { schema: { $ref: 'openapi-components.yaml#/components/schemas/ApplicationCreate' } }
+      responses:
+        '201': { description: Creata, content: { application/json: { schema: { $ref: 'openapi-components.yaml#/components/schemas/Application' } } } }
+        '400': { $ref: 'openapi-components.yaml#/components/responses/Error400' }
+        '404': { $ref: 'openapi-components.yaml#/components/responses/Error404' }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }
+    get:
+      summary: E10 candidature di un annuncio (R7)
+      security: [{ bearer: [] }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: 'openapi-components.yaml#/components/schemas/Application' } } } } } } }
+        '401': { $ref: 'openapi-components.yaml#/components/responses/Error401' }
+        '403': { $ref: 'openapi-components.yaml#/components/responses/Error403' }
+        '404': { $ref: 'openapi-components.yaml#/components/responses/Error404' }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }
+  /api/applications/{id}:
+    get:
+      summary: E11 dettaglio candidatura (R7)
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: 'openapi-components.yaml#/components/parameters/Id' }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: 'openapi-components.yaml#/components/schemas/Application' } } } }
+        '401': { $ref: 'openapi-components.yaml#/components/responses/Error401' }
+        '403': { $ref: 'openapi-components.yaml#/components/responses/Error403' }
+        '404': { $ref: 'openapi-components.yaml#/components/responses/Error404' }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }
+  /api/applications/{id}/cv:
+    get:
+      summary: E12 download CV (R7)
+      security: [{ bearer: [] }]
+      parameters: [{ $ref: 'openapi-components.yaml#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: PDF identico al file caricato
+          headers:
+            Content-Disposition:
+              description: inline; filename="<cvOriginalName ripulito>"; filename*=UTF-8''<urlencoded>
+              schema: { type: string }
+          content: { application/pdf: { schema: { type: string, format: binary } } }
+        '401': { $ref: 'openapi-components.yaml#/components/responses/Error401' }
+        '403': { $ref: 'openapi-components.yaml#/components/responses/Error403' }
+        '404': { $ref: 'openapi-components.yaml#/components/responses/Error404' }
+        '500': { $ref: 'openapi-components.yaml#/components/responses/Error500' }

@@ -1,0 +1,27 @@
+name: CI backend
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - name: Libreria SQLite di sistema
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+      - run: dart pub get
+      - name: Formattazione
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Analisi statica
+        run: dart analyze --fatal-infos
+      - name: Test di accettazione
+        run: dart test --reporter expanded
+      - name: Limite 200 righe per file (constitution C4)
+        run: |
+          bad=$(find bin lib test -name '*.dart' -exec awk 'END { if (NR > 200) print FILENAME ": " NR }' {} \;)
+          if [ -n "$bad" ]; then echo "$bad"; exit 1; fi

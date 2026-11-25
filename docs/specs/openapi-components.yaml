@@ -1,0 +1,98 @@
+# Componenti di openapi.yaml (separati per il limite di 200 righe, C4).
+# Regole di campo allineate a 03-domain-model.md.
+components:
+  responses:
+    Error400: { description: Dati non validi, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    Error401: { description: Non autenticato, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    Error403: { description: Non proprietario, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    Error404: { description: Non trovato, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    Error409: { description: Email già usata, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    Error500: { description: 'Errore interno (INTERNAL_ERROR)', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  parameters:
+    Id: { name: id, in: path, required: true, schema: { type: integer } }
+  schemas:
+    Email: { type: string, pattern: '^[^\s@]+@[^\s@]+\.[^\s@]{2,}$', description: 'trim; in registrazione e login salvata/confrontata in minuscolo' }
+    Health:
+      type: object
+      required: [status]
+      properties: { status: { type: string, enum: [ok] } }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string, enum: [VALIDATION_ERROR, EMAIL_TAKEN, INVALID_CREDENTIALS, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, INVALID_FILE, INTERNAL_ERROR] }
+            message: { type: string }
+            fields: { type: object, additionalProperties: { type: string } }
+    Company:
+      type: object
+      required: [id, name, email, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        createdAt: { type: string, format: date-time }
+    RegisterRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 100, description: lunghezza dopo trim }
+        email: { $ref: '#/components/schemas/Email' }
+        password: { type: string, minLength: 8, maxLength: 128 }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties: { email: { type: string }, password: { type: string } }
+    LoginResponse:
+      type: object
+      required: [token, company]
+      properties:
+        token: { type: string }
+        company: { $ref: '#/components/schemas/Company' }
+    JobCreate:
+      type: object
+      required: [title, description]
+      properties:
+        title: { type: string, minLength: 3, maxLength: 120, description: lunghezza dopo trim }
+        description: { type: string, minLength: 10, maxLength: 5000, description: lunghezza dopo trim }
+        location: { type: string, maxLength: 100, nullable: true }
+    Job:
+      type: object
+      required: [id, title, description, companyId, companyName, createdAt]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        location: { type: string, nullable: true }
+        companyId: { type: integer }
+        companyName: { type: string }
+        createdAt: { type: string, format: date-time }
+    MyJob:
+      allOf:
+        - $ref: '#/components/schemas/Job'
+        - type: object
+          required: [applicationCount]
+          properties: { applicationCount: { type: integer } }
+    Application:
+      type: object
+      required: [id, jobId, firstName, lastName, email, cvOriginalName, cvSize, createdAt]
+      properties:
+        id: { type: integer }
+        jobId: { type: integer }
+        firstName: { type: string }
+        lastName: { type: string }
+        email: { type: string }
+        cvOriginalName: { type: string, maxLength: 255 }
+        cvSize: { type: integer, minimum: 1, maximum: 5242880 }
+        createdAt: { type: string, format: date-time }
+    ApplicationCreate:
+      type: object
+      required: [firstName, lastName, email, cv]
+      properties:
+        firstName: { type: string, minLength: 1, maxLength: 60, description: lunghezza dopo trim }
+        lastName: { type: string, minLength: 1, maxLength: 60, description: lunghezza dopo trim }
+        email: { $ref: '#/components/schemas/Email' }
+        cv: { type: string, format: binary, description: 'PDF (inizia con %PDF), 1 byte–5 MB; Content-Type della parte ignorato' }
