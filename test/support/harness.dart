@@ -24,11 +24,11 @@ class TestServer {
   }
 
   static ServerConfig _config(Directory dir) => ServerConfig(
-    dataDir: dir.path,
-    host: '127.0.0.1',
-    port: 0,
-    pbkdf2Iterations: 1000,
-  );
+        dataDir: dir.path,
+        host: '127.0.0.1',
+        port: 0,
+        pbkdf2Iterations: 1000,
+      );
 
   /// Riavvia il server sulla STESSA cartella dati (test di persistenza).
   Future<void> restart() async {

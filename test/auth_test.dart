@@ -133,9 +133,9 @@ void main() {
       () async {
         final none = await server().api.get('/api/me');
         final fake = await server().api.get(
-          '/api/me',
-          token: 'token-inventato',
-        );
+              '/api/me',
+              token: 'token-inventato',
+            );
         expect(none.status, 401);
         expect(none.errorCode, 'UNAUTHORIZED');
         expect(fake.status, 401);

@@ -31,15 +31,15 @@ void main() {
       expect(board.items.map((j) => j['id']), contains(jobId));
 
       final apps = await server().api.get(
-        '/api/jobs/$jobId/applications',
-        token: newToken,
-      );
+            '/api/jobs/$jobId/applications',
+            token: newToken,
+          );
       expect(apps.items.single['id'], appId);
 
       final cv = await server().api.get(
-        '/api/applications/$appId/cv',
-        token: newToken,
-      );
+            '/api/applications/$appId/cv',
+            token: newToken,
+          );
       expect(cv.status, 200);
       expect(cv.bytes, tinyPdf('Mario Rossi'));
     },
