@@ -64,10 +64,11 @@ class Api {
     String email, {
     String name = 'Acme Srl',
     String password = 'Password123',
-  }) => post(
-    '/api/auth/register',
-    json: {'name': name, 'email': email, 'password': password},
-  );
+  }) =>
+      post(
+        '/api/auth/register',
+        json: {'name': name, 'email': email, 'password': password},
+      );
 
   Future<String> registerAndLogin(
     String email, {
@@ -116,9 +117,9 @@ const validApplicant = {
 
 /// PDF minimo valido (inizia con %PDF).
 List<int> tinyPdf(String label) => utf8.encode(
-  '%PDF-1.4\n'
-  '1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n'
-  '2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n'
-  '3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 200]>>endobj\n'
-  '% $label\ntrailer<</Root 1 0 R>>\n%%EOF\n',
-);
+      '%PDF-1.4\n'
+      '1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n'
+      '2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n'
+      '3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 200 200]>>endobj\n'
+      '% $label\ntrailer<</Root 1 0 R>>\n%%EOF\n',
+    );

@@ -67,13 +67,13 @@ void main() {
   group('R5 bacheca pubblica', () {
     test('AC-R5-01 elenco senza auth, dal più recente', () async {
       final first = await server().api.createJob(
-        token,
-        title: 'Primo annuncio',
-      );
+            token,
+            title: 'Primo annuncio',
+          );
       final second = await server().api.createJob(
-        token,
-        title: 'Secondo annuncio',
-      );
+            token,
+            title: 'Secondo annuncio',
+          );
       final r = await server().api.get('/api/jobs');
       expect(r.status, 200);
       expect(r.items.map((j) => j['id']).toList(), [second, first]);
@@ -95,9 +95,9 @@ void main() {
     test('AC-R7-01 solo i propri annunci, con numero candidature', () async {
       final mine = await server().api.createJob(token);
       final other = await server().api.registerAndLogin(
-        'hr@beta.it',
-        name: 'Beta Spa',
-      );
+            'hr@beta.it',
+            name: 'Beta Spa',
+          );
       await server().api.createJob(other, title: 'Annuncio di Beta');
       await server().api.createApplication(mine);
       await server().api.createApplication(mine);
